@@ -25,6 +25,12 @@ module Quill::Builder
             attrs << ['<b>', '</b>']
           when 'italic'
             attrs << ['<i>', '</i>']
+          when 'underline'
+            attrs << ['<u>', '</u>']
+          when 'strike'
+            attrs << ['<s>', '</s>']
+          when 'background'
+            attrs << [%Q|<span style="background-color: #{value}">|, '</span>']
           when 'color'
             attrs << [%Q|<span style="color: #{value}">|, '</span>']
           end
