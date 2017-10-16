@@ -71,7 +71,8 @@ Content-Type: text/html
   var quill = new Quill('#editor', {
     modules: {
       toolbar: [
-        ['bold', 'italic'],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'color': [] }, { 'background': [] }],
         ['link', 'blockquote', 'code-block', 'image'],
         [{ list: 'ordered' }, { list: 'bullet' }]
       ]
