@@ -22,18 +22,20 @@ module Quill::Builder
         item['attributes'].each_pair do |key, value|
           case key
           when 'bold'
-            attrs << 'font-weight: bold;'
+            attrs << ['<b>', '</b>']
           when 'italic'
-            attrs << 'font-style: italic;'
+            attrs << ['<i>', '</i>']
           when 'color'
-            attrs << "color: #{value}"
+            attrs << [%Q|<span style="color: #{value}">|, '</span>']
           end
         end
       end
       if attrs.empty?
         text
       else
-        %Q|<span style="#{attrs.join(' ')}">#{text}</span>|
+        attrs.inject(text) do |memo, tag_pair|
+          "#{tag_pair.first}#{memo}#{tag_pair.last}"
+        end
       end
     end
   end
