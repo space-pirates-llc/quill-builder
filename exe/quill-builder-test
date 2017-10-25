@@ -11,7 +11,7 @@ class QuillBuilderTest
     loop do
       client = server.accept
       headers = []
-      until (header = client.gets.chomp).empty?
+      until (header = client.gets&.chomp)&.empty?
         headers << header
       end
       body = nil
