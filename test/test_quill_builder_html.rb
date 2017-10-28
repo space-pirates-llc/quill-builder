@@ -5,12 +5,26 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
   def test_convert_text_only
     input = {
       ops: [
+        { insert: "aaa\n" },
+      ]
+    }
+    output = Quill::Builder::HTML.new(input.to_json).convert_to_lines
+    expect = [
+      { block: :p, inlines: [ { attrs: [], text: 'aaa' } ] }
+    ]
+    assert_equal(expect, output)
+  end
+
+  def test_convert_text_only_with_newline
+    input = {
+      ops: [
         { insert: "aaa\nbbb\n" },
       ]
     }
-    output = Quill::Builder::HTML.new(input.to_json).convert_intermediate
+    output = Quill::Builder::HTML.new(input.to_json).convert_to_lines
     expect = [
-      { attrs: [], text: "aaa\nbbb\n" }
+      { block: :p, inlines: [ { attrs: [], text: 'aaa' } ] },
+      { block: :p, inlines: [ { attrs: [], text: 'bbb' } ] }
     ]
     assert_equal(expect, output)
   end
@@ -26,11 +40,16 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
         { insert: "a\n" }
       ]
     }
-    output = Quill::Builder::HTML.new(input.to_json).convert_intermediate
+    output = Quill::Builder::HTML.new(input.to_json).convert_to_lines
     expect = [
-      { text: 'a', attrs: [] },
-      { text: 'aaaa', attrs: [["<b>", "</b>"]] },
-      { text: "a\n", attrs: [] }
+      {
+        block: :p,
+        inlines: [
+          { attrs: [], text: 'a' },
+          { attrs: [['<b>', '</b>']], text: 'aaaa' },
+          { attrs: [], text: 'a' }
+        ]
+      }
     ]
     assert_equal(expect, output)
   end
