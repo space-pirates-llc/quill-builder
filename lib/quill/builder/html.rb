@@ -8,7 +8,7 @@ module Quill::Builder
     end
 
     def convert
-      tags = convert_intermediate
+      tags = convert_to_lines
       tags.map { |item|
         text = item[:text].gsub("\n", '<br />')
         item[:attrs].inject(text) do |memo, tag_pair|
@@ -17,15 +17,44 @@ module Quill::Builder
       }.join
     end
 
-    def convert_intermediate
+    def convert_to_lines
       json = JSON.parse(@text)
-      tags = json['ops'].inject([]) do |memo, item|
-        memo << convert_item(memo, item['insert'], item['attributes'])
+      lines = json['ops'].inject([{ block: :p, inlines: [] }]) do |lines, item|
+        if item['attributes']&.keys&.include?('blockquote')
+          lines.last[:block] = :blockquote
+        elsif item['attributes']&.keys&.include?('code-block')
+          lines.last[:block] = :pre
+        else
+          converted = convert_inline(item['insert'], item['attributes'])
+          partition_item_to_each_lines(lines, converted)
+        end
+        lines
       end
-      tags
+      lines.pop if lines.last[:inlines].nil? || lines.last[:inlines].empty?
+      lines
     end
 
-    def convert_item(memo, text, attributes)
+    def partition_item_to_each_lines(lines, converted)
+      if converted[:text].include?("\n")
+        splitted = converted[:text].split("\n")
+        lines.last[:inlines] << {
+          text: splitted.shift,
+          attrs: converted[:attrs]
+        }
+        lines << { block: :p, inlines: [] }
+        splitted.each do |l|
+          lines.last[:inlines] << {
+            text: l,
+            attrs: converted[:attrs]
+          }
+          lines << { block: :p, inlines: [] }
+        end
+      else
+        lines.last[:inlines] << converted
+      end
+    end
+
+    def convert_inline(text, attributes)
       attrs = []
       if attributes
         attributes.each_pair do |key, value|
@@ -42,12 +71,6 @@ module Quill::Builder
             attrs << [%Q|<span style="background-color: #{value}">|, '</span>']
           when 'color'
             attrs << [%Q|<span style="color: #{value}">|, '</span>']
-          when 'blockquote'
-            text = normalize_block(memo, text)
-            attrs << ['<blockquote>', '</blockquote>']
-          when 'code-block'
-            text = normalize_block(memo, text)
-            attrs << ['<pre>', '</pre>']
           end
         end
       end
