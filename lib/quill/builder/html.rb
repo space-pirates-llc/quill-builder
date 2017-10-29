@@ -11,7 +11,10 @@ module Quill::Builder
       convert_to_lines.map { |block|
         outer_tag = block[:block]
         inner = block[:inlines].inject('') { |memo, inline|
-          memo + inline[:attrs].inject(inline[:text]) { |memo, tag_pair|
+          text = inline[:text].nil? ? '' : inline[:text]
+          text = text[0..-2] if text[-1] == "\n"
+          text = '&emsp;' if text.empty? && block[:inlines].size == 1
+          memo + inline[:attrs].inject(text) { |memo, tag_pair|
             "#{tag_pair.first}#{memo}#{tag_pair.last}"
           }
         }
@@ -36,8 +39,10 @@ module Quill::Builder
           lines.last[:block] = :pre
           lines << { block: :p, inlines: [] }
         else
-          converted = convert_inline(item['insert'], item['attributes'])
-          partition_item_to_each_lines(lines, converted)
+          unless item['insert'] == "\n"
+            converted = convert_inline(item['insert'], item['attributes'])
+            partition_item_to_each_lines(lines, converted)
+          end
         end
         lines
       end
@@ -47,19 +52,19 @@ module Quill::Builder
 
     def partition_item_to_each_lines(lines, converted)
       if converted[:text].include?("\n")
-        splitted = converted[:text].split("\n")
+        splitted = converted[:text].split(/(?<=\n)/)
         lines.last[:inlines] << {
           text: splitted.shift,
           attrs: converted[:attrs]
         }
-        lines << { block: :p, inlines: [] }
         splitted.each do |l|
+          lines << { block: :p, inlines: [] }
           lines.last[:inlines] << {
             text: l,
             attrs: converted[:attrs]
           }
-          lines << { block: :p, inlines: [] }
         end
+        lines << { block: :p, inlines: [] } if converted[:text][-1] == "\n"
       else
         lines.last[:inlines] << converted
       end
