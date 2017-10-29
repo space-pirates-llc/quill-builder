@@ -95,16 +95,5 @@ module Quill::Builder
         attrs: attrs
       }
     end
-
-    def normalize_block(memo, text)
-      last = memo.last
-      if last && text[0] == "\n" && last[:text][-1] != "\n"
-        splited = last[:text].split(/(?<=\n)/)
-        last[:text] = splited[0..-2].join("\n")
-        text = splited.last + text[1..-1]
-        memo.pop if last[:text].empty?
-      end
-      text
-    end
   end
 end
