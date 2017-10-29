@@ -2,7 +2,7 @@ require 'helper'
 require 'quill/builder/html'
 
 class Quill::Builder::HTML::Test < Test::Unit::TestCase
-  def test_convert_text_only
+  def test_convert_text
     input = {
       ops: [
         { insert: "aaa\n" },
@@ -15,7 +15,7 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
     assert_equal(expect, output)
   end
 
-  def test_convert_text_only_with_newline
+  def test_convert_text_with_newline
     input = {
       ops: [
         { insert: "aaa\nbbb\n" },
@@ -29,7 +29,7 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
     assert_equal(expect, output)
   end
 
-  def test_convert_inline_only
+  def test_convert_inline
     input = {
       ops: [
         { insert: 'a' },
@@ -54,7 +54,7 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
     assert_equal(expect, output)
   end
 
-  def test_convert_inline_only_with_multi_attrs
+  def test_convert_inline_with_multi_attrs
     input = {
       ops: [
         { insert: 'a' },
@@ -79,7 +79,7 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
     assert_equal(expect, output)
   end
 
-  def test_convert_with_block
+  def test_convert_block
     input = {
       ops: [
         { insert: 'a' },
@@ -108,7 +108,7 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
     assert_equal(expect, output)
   end
 
-  def test_convert_with_block_and_next_line
+  def test_convert_block_with_next_text
     input = {
       ops: [
         { insert: 'a' },
