@@ -53,4 +53,33 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
     ]
     assert_equal(expect, output)
   end
+
+  def test_convert_with_block
+    input = {
+      ops: [
+        { insert: 'a' },
+        {
+          attributes: { bold: true },
+          insert: 'aaaa'
+        },
+        { insert: 'a' },
+        {
+          attributes: { blockquote: true },
+          insert: "\n"
+        }
+      ]
+    }
+    output = Quill::Builder::HTML.new(input.to_json).convert_to_lines
+    expect = [
+      {
+        block: :blockquote,
+        inlines: [
+          { attrs: [], text: 'a' },
+          { attrs: [['<b>', '</b>']], text: 'aaaa' },
+          { attrs: [], text: 'a' }
+        ]
+      }
+    ]
+    assert_equal(expect, output)
+  end
 end
