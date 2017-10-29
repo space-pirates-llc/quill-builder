@@ -8,11 +8,20 @@ module Quill::Builder
     end
 
     def convert
-      tags = convert_to_lines
-      tags.map { |item|
-        text = item[:text].gsub("\n", '<br />')
-        item[:attrs].inject(text) do |memo, tag_pair|
-          "#{tag_pair.first}#{memo}#{tag_pair.last}"
+      convert_to_lines.map { |block|
+        outer_tag = block[:block]
+        inner = block[:inlines].inject('') { |memo, inline|
+          memo + inline[:attrs].inject(inline[:text]) { |memo, tag_pair|
+            "#{tag_pair.first}#{memo}#{tag_pair.last}"
+          }
+        }
+        case outer_tag
+        when Symbol
+          "<#{outer_tag}>#{inner}</#{outer_tag}>\n"
+        when Array
+          outer_tag.inject(inner) { |memo, tag|
+            "<#{tag}>#{memo}</#{tag}>"
+          } + "\n"
         end
       }.join
     end
@@ -21,9 +30,11 @@ module Quill::Builder
       json = JSON.parse(@text)
       lines = json['ops'].inject([{ block: :p, inlines: [] }]) do |lines, item|
         if item['attributes']&.keys&.include?('blockquote')
-          lines.last[:block] = :blockquote
+          lines.last[:block] = [ :p, :blockquote ]
+          lines << { block: :p, inlines: [] }
         elsif item['attributes']&.keys&.include?('code-block')
           lines.last[:block] = :pre
+          lines << { block: :p, inlines: [] }
         else
           converted = convert_inline(item['insert'], item['attributes'])
           partition_item_to_each_lines(lines, converted)
