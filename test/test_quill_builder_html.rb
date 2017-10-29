@@ -97,7 +97,7 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
     output = Quill::Builder::HTML.new(input.to_json).convert_to_lines
     expect = [
       {
-        block: :blockquote,
+        block: [ :p, :blockquote ],
         inlines: [
           { attrs: [], text: 'a' },
           { attrs: [['<b>', '</b>']], text: 'aaaa' },
