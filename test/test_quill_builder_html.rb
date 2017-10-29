@@ -54,6 +54,31 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
     assert_equal(expect, output)
   end
 
+  def test_convert_inline_only_with_multi_attrs
+    input = {
+      ops: [
+        { insert: 'a' },
+        {
+          attributes: { bold: true, italic: true },
+          insert: 'aaaa'
+        },
+        { insert: "a\n" }
+      ]
+    }
+    output = Quill::Builder::HTML.new(input.to_json).convert_to_lines
+    expect = [
+      {
+        block: :p,
+        inlines: [
+          { attrs: [], text: 'a' },
+          { attrs: [['<b>', '</b>'], ['<i>', '</i>']], text: 'aaaa' },
+          { attrs: [], text: 'a' }
+        ]
+      }
+    ]
+    assert_equal(expect, output)
+  end
+
   def test_convert_with_block
     input = {
       ops: [
