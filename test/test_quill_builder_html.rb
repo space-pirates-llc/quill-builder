@@ -10,7 +10,7 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
     }
     output = Quill::Builder::HTML.new(input.to_json).convert_to_lines
     expect = [
-      { block: :p, inlines: [ { attrs: [], text: 'aaa' } ] }
+      { block: :p, inlines: [ { attrs: [], text: "aaa\n" } ] }
     ]
     assert_equal(expect, output)
   end
@@ -23,8 +23,8 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
     }
     output = Quill::Builder::HTML.new(input.to_json).convert_to_lines
     expect = [
-      { block: :p, inlines: [ { attrs: [], text: 'aaa' } ] },
-      { block: :p, inlines: [ { attrs: [], text: 'bbb' } ] }
+      { block: :p, inlines: [ { attrs: [], text: "aaa\n" } ] },
+      { block: :p, inlines: [ { attrs: [], text: "bbb\n" } ] }
     ]
     assert_equal(expect, output)
   end
@@ -47,7 +47,7 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
         inlines: [
           { attrs: [], text: 'a' },
           { attrs: [['<b>', '</b>']], text: 'aaaa' },
-          { attrs: [], text: 'a' }
+          { attrs: [], text: "a\n" }
         ]
       }
     ]
@@ -72,7 +72,7 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
         inlines: [
           { attrs: [], text: 'a' },
           { attrs: [['<b>', '</b>'], ['<i>', '</i>']], text: 'aaaa' },
-          { attrs: [], text: 'a' }
+          { attrs: [], text: "a\n" }
         ]
       }
     ]
