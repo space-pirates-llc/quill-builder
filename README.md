@@ -20,7 +20,21 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+# JSON data from quill.getContents()
+input = [
+  {
+    block: :p,
+    inlines: [
+      { text: 'aaa ', attrs: [] },
+      { text: 'bold', attrs: [['<b>', '</b>']] },
+      { text: " bbb\n", attrs: [] }
+    ]
+  }
+]
+Quill::Builder::HTML.new(input.to_json).convert
+# => <p>aaa <b>bold</b> bbb</p>
+```
 
 ## Development
 
