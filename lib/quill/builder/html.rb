@@ -1,5 +1,6 @@
 require 'quill/builder/base'
 require 'json'
+require 'erb'
 
 module Quill::Builder
   class HTML < Base
@@ -11,7 +12,7 @@ module Quill::Builder
       convert_to_lines.map { |block|
         outer_tag = block[:block]
         inner = block[:inlines].inject('') { |memo, inline|
-          text = inline[:text].nil? ? '' : inline[:text]
+          text = inline[:text].nil? ? '' : ERB::Util.html_escape(inline[:text])
           text = text[0..-2] if text[-1] == "\n"
           text = '&emsp;' if text.empty? && block[:inlines].size == 1
           memo + inline[:attrs].inject(text) { |memo, tag_pair|

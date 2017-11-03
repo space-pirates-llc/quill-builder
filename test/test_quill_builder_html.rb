@@ -233,4 +233,16 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
     ]
     assert_equal(expect, output)
   end
+
+  def test_convert_escaped_html
+    input = {
+      ops: [
+        { insert: "<b>aaaa</b>\n" },
+      ]
+    }
+    output = Quill::Builder::HTML.new(input.to_json).convert
+    assert_equal(<<~EXPECT, output)
+<p>&lt;b&gt;aaaa&lt;/b&gt;</p>
+    EXPECT
+  end
 end
