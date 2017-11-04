@@ -13,6 +13,10 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
       { block: :p, inlines: [ { attrs: [], text: "aaa\n" } ] }
     ]
     assert_equal(expect, output)
+    output = Quill::Builder::HTML.new(input.to_json).convert
+    assert_equal(<<~EXPECT, output)
+<p>aaa</p>
+    EXPECT
   end
 
   def test_convert_text_with_newline
@@ -27,6 +31,11 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
       { block: :p, inlines: [ { attrs: [], text: "bbb\n" } ] }
     ]
     assert_equal(expect, output)
+    output = Quill::Builder::HTML.new(input.to_json).convert
+    assert_equal(<<~EXPECT, output)
+<p>aaa</p>
+<p>bbb</p>
+    EXPECT
   end
 
   def test_convert_inline
@@ -52,6 +61,10 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
       }
     ]
     assert_equal(expect, output)
+    output = Quill::Builder::HTML.new(input.to_json).convert
+    assert_equal(<<~EXPECT, output)
+<p>a<b>aaaa</b>a</p>
+    EXPECT
   end
 
   def test_convert_inline_with_multi_attrs
@@ -77,6 +90,10 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
       }
     ]
     assert_equal(expect, output)
+    output = Quill::Builder::HTML.new(input.to_json).convert
+    assert_equal(<<~EXPECT, output)
+<p>a<i><b>aaaa</b></i>a</p>
+    EXPECT
   end
 
   def test_convert_block
@@ -106,6 +123,10 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
       }
     ]
     assert_equal(expect, output)
+    output = Quill::Builder::HTML.new(input.to_json).convert
+    assert_equal(<<~EXPECT, output)
+<blockquote><p>a<b>aaaa</b>a</p></blockquote>
+    EXPECT
   end
 
   def test_convert_block_with_next_text
@@ -131,6 +152,11 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
       }
     ]
     assert_equal(expect, output)
+    output = Quill::Builder::HTML.new(input.to_json).convert
+    assert_equal(<<~EXPECT, output)
+<blockquote><p>a</p></blockquote>
+<p>b</p>
+    EXPECT
   end
 
   def test_convert_block_with_prev_text
@@ -155,6 +181,11 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
       }
     ]
     assert_equal(expect, output)
+    output = Quill::Builder::HTML.new(input.to_json).convert
+    assert_equal(<<~EXPECT, output)
+<p>a</p>
+<blockquote><p>b</p></blockquote>
+    EXPECT
   end
 
   def test_convert_block_with_next_inline
@@ -184,6 +215,11 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
       }
     ]
     assert_equal(expect, output)
+    output = Quill::Builder::HTML.new(input.to_json).convert
+    assert_equal(<<~EXPECT, output)
+<blockquote><p>a</p></blockquote>
+<p><b>b</b></p>
+    EXPECT
   end
 
   def test_convert_complex
@@ -232,6 +268,14 @@ class Quill::Builder::HTML::Test < Test::Unit::TestCase
       }
     ]
     assert_equal(expect, output)
+    output = Quill::Builder::HTML.new(input.to_json).convert
+    assert_equal(<<~EXPECT, output)
+<blockquote><p>a</p></blockquote>
+<p><b>b</b></p>
+<p>&emsp;</p>
+<p>&emsp;</p>
+<p><b>a</b></p>
+    EXPECT
   end
 
   def test_convert_escaped_html
